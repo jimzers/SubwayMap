@@ -1,6 +1,8 @@
 import javax.swing.*;
 import javax.xml.soap.Text;
 import java.awt.event.*;
+import java.awt.geom.Line2D;
+
 public class Starter
 {
     // variables are static because they need to be referenced and changed within other class methods
@@ -9,6 +11,7 @@ public class Starter
     // becomes true if the program is in the middle of connecting a line between stations, makes sure that
     // you can't change state to add in the middle.
     public static boolean connecting = false;
+    public static int station_x, station_y;
     public static void main(String[] args) {
         /*
          * create a Frame, where the graphic will go
@@ -46,6 +49,7 @@ public class Starter
         f.add(subway_rectangle);
         f.setVisible(true);
 
+        // keylistener for general frame
         class myKeyListener implements KeyListener {
             public void keyPressed(KeyEvent e) {
                 //when a key is pressed I check to see if it is changing states
@@ -68,6 +72,69 @@ public class Starter
             public void keyTyped(KeyEvent e) {
             }
         }
+
+        // mouselistener for each specific ellipse - helps to connect them
+        class StationConnect implements MouseListener {
+            int event_x,event_y;
+            @Override
+            public void mousePressed(MouseEvent e) {
+                event_x = e.getX();
+                event_y = e.getY();
+                if (mouse_state.equals("connect")){
+                    if (!connecting){
+                        // if not in midst of connecting, get x and y pos of the clicked object
+                        // get the ellipse that was clicked
+                        Object source = e.getSource();
+                        // double check to make sure the circle clicked is ellipsecomponent
+                        if(source instanceof EllipseComponent){
+                            // type casting to be able to use getX and getY
+                            EllipseComponent station1 = (EllipseComponent) source;
+                            station_x = station1.getX();
+                            station_y = station1.getY();
+                            connecting = true;
+                        }
+                    } else {
+                        // get ellipse clicked
+                        Object source2 = e.getSource();
+                        if(source2 instanceof EllipseComponent){
+                            // type casting to be able to use getX and getY
+                            EllipseComponent station2 = (EllipseComponent) source2;
+
+                            // make line component between the two selected ellipses
+                            // the plus 10 part is the increment to make the line go between the circles' center
+                            LineComponent connector = new LineComponent(station_x + 10, station_y + 10,
+                                    station2.getX() + 10, station2.getY() + 10);
+                            f.add(connector);
+                            f.setVisible(true);
+                            connecting = false;
+                        }
+
+                    }
+                }
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+        }
+
+        // mouselistener for general frame
         class MickeyMouse implements MouseListener {
 
             int event_y, event_x;
@@ -82,19 +149,21 @@ public class Starter
                     // prompt user for station name
                     text_label = JOptionPane.showInputDialog(null, "please gimme a label for this station");
 
-                    // initialize variables
+                    // initialize label and circle representing station
                     TextComponent tC = new TextComponent(event_x, event_y - 5, text_label);
                     EllipseComponent eC = new EllipseComponent(event_x, event_y, 20, 20);
 
+                    // add mouselistener for connecting to the ellipse
+                    MouseListener station_listener = new StationConnect();
+                    eC.addMouseListener(station_listener);
 
                     // add elements to frame
                     f.add(eC);
                     f.setVisible(true);
                     f.add(tC);
                     f.setVisible(true);
-                } else if (mouse_state.equals("connect")) {
-                    // TODO: give borders to each station, maybe make them a separate object? do all this before adding this feature
-                    JOptionPane.showMessageDialog(null, "connecting thing unfinsihsed");
+
+
                 }
 
 
@@ -105,7 +174,6 @@ public class Starter
             public void mouseExited(MouseEvent e) { }
             public void mouseClicked(MouseEvent e) { }
         }
-
 
         f.addKeyListener(new myKeyListener());//add keylistener to frame
         f.addMouseListener(new MickeyMouse()); // add mouselistner to frame
