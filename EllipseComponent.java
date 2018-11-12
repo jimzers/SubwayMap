@@ -6,13 +6,15 @@ import java.awt.Color;
 public class EllipseComponent extends JComponent
 {
     Ellipse2D r;
-    int x,y,width,height;
-    public EllipseComponent(int xPos, int yPos,int w, int h)
+    private int x,y,width,height;
+    String color;
+    public EllipseComponent(int xPos, int yPos,int w, int h, String c)
     {
         x = xPos;
         y = yPos;
         width = w;
         height = h;
+        color = c;
     }
 
     public void paintComponent(Graphics g)
@@ -20,10 +22,20 @@ public class EllipseComponent extends JComponent
     {
         r = new Ellipse2D.Double(x,y,width,height);
         Graphics2D g2 = (Graphics2D) g;
-        g2.setColor(Color.RED);
+        // todo: switch statement?
+        if(color.equals("red")){
+            g2.setColor(Color.RED);
+        } else if(color.equals("yellow")){
+            g2.setColor(Color.YELLOW);
+        } else if(color.equals("green")){
+            g2.setColor(Color.GREEN);
+        } else if(color.equals("blue")){
+            g2.setColor(Color.BLUE);
+        }
         g2.fill(r);
     }
-    
+
+
     public void moveX(int dx)
     {
         x = x + dx;
