@@ -10,7 +10,7 @@ public class Starter
     // can either be add or connect
     public static String mouse_state = "add";
     public static String current_color = "red";
-
+    public static boolean autoconnect = true;
     // either red, blue, yellow, green
     static String color = "RED";
 
@@ -41,9 +41,9 @@ public class Starter
         // init components
         RectangleComponent subway_rectangle = new RectangleComponent(600, 10, 200, 100);
         TitleComponent subway_title = new TitleComponent(610, 40, sub_title);
-        TextComponent instructions = new TextComponent(610, 60, "press 'a' to add stations,");
-        TextComponent instructions2 = new TextComponent(610, 72, "press 'c' to connect stations");
-        TextComponent mode_text = new TextComponent(610, 84, "current mode: add");
+        TextComponent instructions = new TextComponent(610, 60, "click to add stations,");
+        TextComponent instructions2 = new TextComponent(610, 72, "press 'c' to toggle autoconnect");
+        TextComponent mode_text = new TextComponent(610, 84, "autoconnect: on");
         TextComponent color_text = new TextComponent(610, 96, "current color: red");
 
 
@@ -71,12 +71,18 @@ public class Starter
                     }
                 }
                 if (e.getKeyCode() == KeyEvent.VK_C) {
-                    if (!connecting) {
-                        mouse_state = "connect";
+                    if (autoconnect){
+                        autoconnect = false;
+                        connecting = false;
+                    } else {
+                        autoconnect = true;
                     }
                 }
-                mode_text.setText("current mode: " + mouse_state);
-
+                if (autoconnect) {
+                    mode_text.setText("autoconnect: on");
+                } else{
+                    mode_text.setText("autoconnect: off");
+                }
                 if (e.getKeyCode() == KeyEvent.VK_R) {
                     current_color = "red";
                 }
@@ -99,70 +105,7 @@ public class Starter
             }
         }
 
-        // mouselistener for each specific ellipse - helps to connect them
-        /*
-        class StationConnect implements MouseListener {
-            int event_x,event_y;
-            @Override
-            public void mousePressed(MouseEvent event) {
 
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent event) {
-                event_x = event.getX();
-                event_y = event.getY();
-                if (mouse_state.equals("connect")){
-                    System.out.println("connecting the dots");
-                    if (!connecting){
-                        System.out.println("chicken wing");
-                        // if not in midst of connecting, get x and y pos of the clicked object
-                        // get the ellipse that was clicked
-                        Object source = event.getSource();
-                        // double check to make sure the circle clicked is ellipsecomponent
-                        if(source instanceof EllipseComponent){
-                            // type casting to be able to use getX and getY
-                            EllipseComponent station1 = (EllipseComponent) source;
-                            station_x = station1.getX();
-                            station_y = station1.getY();
-                            connecting = true;
-                        }
-                    } else {
-                        // get ellipse clicked
-                        Object source2 = event.getSource();
-                        if(source2 instanceof EllipseComponent){
-                            // type casting to be able to use getX and getY
-                            EllipseComponent station2 = (EllipseComponent) source2;
-
-                            // make line component between the two selected ellipses
-                            // the plus 10 part is the increment to make the line go between the circles' center
-                            LineComponent connector = new LineComponent(station_x + 10, station_y + 10,
-                                    station2.getX() + 10, station2.getY() + 10);
-                            f.add(connector);
-                            f.setVisible(true);
-                            connecting = false;
-                        }
-
-                    }
-                }
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-        }
-        */
         // mouselistener for general frame
         class MickeyMouse implements MouseListener {
 
@@ -182,7 +125,22 @@ public class Starter
                     // initialize label and circle representing station
                     TextComponent tC = new TextComponent(event_x, event_y - 5, text_label);
                     EllipseComponent eC = new EllipseComponent(event_x, event_y, 20, 20, current_color);
-
+                    if(autoconnect){
+                        if (!connecting) {
+                            System.out.println("created anchor pt");
+                            station_x = event_x;
+                            station_y = event_y;
+                            connecting = true;
+                        } else {
+                            System.out.println("created line");
+                            LineComponent connector = new LineComponent(station_x + 10, station_y + 10,
+                                    event_x + 10, event_y + 10, current_color);
+                            f.add(connector);
+                            f.setVisible(true);
+                            station_x = event_x;
+                            station_y = event_y;
+                        }
+                    }
                     // add ellipse to array of stations
                     station_array.add(eC);
 
@@ -201,79 +159,6 @@ public class Starter
 
 
 
-                }
-
-                if (mouse_state.equals("connect")){
-                    System.out.println("connecting the dots");
-                    if (!connecting){
-                        System.out.println("chicken wing");
-
-
-                        // loop thru array of existing ellipse components to see if you hit one
-                        for(EllipseComponent station : station_array){
-                            if(station.contains(event_x, event_y)){
-                                System.out.println("successfully found an ellipse");
-                                station_x = station.getX();
-                                station_y = station.getY();
-                                connecting = true;
-                            }
-                        }
-
-
-
-                        /*
-                        // if not in midst of connecting, get x and y pos of the clicked object
-                        // get the ellipse that was clicked
-                        Object source = e.getComponent();
-
-                        System.out.println(e.getComponent().getName());
-                        // double check to make sure the circle clicked is ellipsecomponent
-                        if(source instanceof EllipseComponent){
-                            System.out.println("it's an ellipse");
-                            // type casting to be able to use getX and getY
-                            EllipseComponent station1 = (EllipseComponent) source;
-                            station_x = station1.getX();
-                            station_y = station1.getY();
-                            connecting = true;
-                        */
-
-
-                        } else {
-                            for(EllipseComponent station:station_array){
-                                if(station.contains(event_x, event_y)){
-                                    if(!(station.getX() == station_x && station.getY() == station_y)){
-                                        System.out.println("creating the line");
-                                        // make line component between the two selected ellipses
-                                        // the plus 10 part is the increment to make the line go between the circles' center
-                                        LineComponent connector = new LineComponent(station_x + 10, station_y + 10,
-                                                station.getX() + 10, station.getY() + 10, current_color);
-                                        f.add(connector);
-                                        f.setVisible(true);
-                                    }
-                                }
-                            }
-                            connecting = false;
-                            /*
-                            // get ellipse clicked
-                            Object source2 = e.getComponent();
-
-                            if(source2 instanceof EllipseComponent) {
-                                // type casting to be able to use getX and getY
-                                EllipseComponent station2 = (EllipseComponent) source2;
-
-                                // make line component between the two selected ellipses
-                                // the plus 10 part is the increment to make the line go between the circles' center
-                                LineComponent connector = new LineComponent(station_x + 10, station_y + 10,
-                                        station2.getX() + 10, station2.getY() + 10, current_color);
-                                f.add(connector);
-                                f.setVisible(true);
-                                connecting = false;
-
-                            }
-                            */
-
-
-                        }
                 }
 
 
