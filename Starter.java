@@ -156,12 +156,8 @@ public class Starter
                     f.setVisible(true);
 
                     //eC.addMouseListener(new StationConnect());
-
-
-
+                    
                 }
-
-
             }
 
             public void mouseReleased(MouseEvent e) { }
