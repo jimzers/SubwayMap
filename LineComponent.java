@@ -32,7 +32,7 @@ public class LineComponent extends JComponent
         } else if(color.equals("blue")){
             g2.setColor(Color.BLUE);
         }
-        g2.fill(r);
+        g2.drawLine(x, y, x2, y2);
     }
     /*
     public void moveX(int dx)
