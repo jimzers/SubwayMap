@@ -1,23 +1,21 @@
 import javax.swing.*;
-import javax.xml.soap.Text;
 import java.awt.event.*;
-import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 public class Starter
 {
     // variables are static because they need to be referenced and changed within other class methods
     // can either be add or connect
-    public static String mouse_state = "add";
-    public static String current_color = "red";
-    public static boolean autoconnect = true;
+    private static String mouse_state = "add";
+    private static String current_color = "red";
+    private static boolean autoconnect = true;
     // either red, blue, yellow, green
     static String color = "RED";
 
     // becomes true if the program is in the middle of connecting a line between stations, makes sure that
     // you can't change state to add in the middle.
-    public static boolean connecting = false;
-    public static int station_x, station_y;
+    private static boolean connecting = false;
+    private static int station_x, station_y;
 
     static ArrayList<EllipseComponent> station_array = new ArrayList<EllipseComponent>();
 
@@ -39,18 +37,21 @@ public class Starter
         String sub_title = JOptionPane.showInputDialog(null, "please title this subway map");
 
         // init components
-        RectangleComponent subway_rectangle = new RectangleComponent(600, 10, 200, 100);
+        RectangleComponent subway_rectangle = new RectangleComponent(600, 10, 200, 120);
         TitleComponent subway_title = new TitleComponent(610, 40, sub_title);
         TextComponent instructions = new TextComponent(610, 60, "click to add stations,");
         TextComponent instructions2 = new TextComponent(610, 72, "press 'c' to toggle autoconnect");
-        TextComponent mode_text = new TextComponent(610, 84, "autoconnect: on");
-        TextComponent color_text = new TextComponent(610, 96, "current color: red");
+        TextComponent instructions3 = new TextComponent(610, 84, "'r, b, g, y' to toggle color");
+        TextComponent mode_text = new TextComponent(610, 96, "autoconnect: on");
+        TextComponent color_text = new TextComponent(610, 108, "current color: red");
 
 
         // add elements to frame
         f.add(instructions);
         f.setVisible(true);
         f.add(instructions2);
+        f.setVisible(true);
+        f.add(instructions3);
         f.setVisible(true);
         f.add(mode_text);
         f.setVisible(true);
@@ -109,8 +110,8 @@ public class Starter
         // mouselistener for general frame
         class MickeyMouse implements MouseListener {
 
-            int event_y, event_x;
-            String text_label;
+            private int event_y, event_x;
+            private String text_label;
 
             public void mousePressed(MouseEvent e) {
                 // get the coordinattes when mouse clicked
@@ -144,18 +145,12 @@ public class Starter
                     // add ellipse to array of stations
                     station_array.add(eC);
 
-
-                    // add mouselistener for connecting to the ellipse
-//                    MouseListener station_listener = new StationConnect();
-  //                  eC.addMouseListener(station_listener);
-
                     // add elements to frame
                     f.add(eC);
                     f.setVisible(true);
                     f.add(tC);
                     f.setVisible(true);
 
-                    //eC.addMouseListener(new StationConnect());
                     
                 }
             }
