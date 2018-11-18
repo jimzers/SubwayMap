@@ -5,12 +5,10 @@ import java.util.ArrayList;
 public class Starter
 {
     // variables are static because they need to be referenced and changed within other class methods
-    // can either be add or connect
-    private static String mouse_state = "add";
+
+    // either red, blue, yellow, green
     private static String current_color = "red";
     private static boolean autoconnect = true;
-    // either red, blue, yellow, green
-    static String color = "RED";
 
     // becomes true if the program is in the middle of connecting a line between stations, makes sure that
     // you can't change state to add in the middle.
@@ -66,19 +64,17 @@ public class Starter
         class myKeyListener implements KeyListener {
             public void keyPressed(KeyEvent e) {
                 //when a key is pressed I check to see if it is changing states
-                if (e.getKeyCode() == KeyEvent.VK_A) {
-                    if (!connecting) {
-                        mouse_state = "add";
-                    }
-                }
                 if (e.getKeyCode() == KeyEvent.VK_C) {
                     if (autoconnect){
+                        // reset the dot connecting by setting connecting variable to false so previous connection
+                        // doesn't continue
                         autoconnect = false;
                         connecting = false;
                     } else {
                         autoconnect = true;
                     }
                 }
+                // update autoconnect text
                 if (autoconnect) {
                     mode_text.setText("autoconnect: on");
                 } else{
@@ -96,7 +92,7 @@ public class Starter
                 if (e.getKeyCode() == KeyEvent.VK_B) {
                     current_color = "blue";
                 }
-                color_text.setText("current color: " + current_color);
+                color_text.setText("current color: " + current_color); // update color text
             }
 
             public void keyReleased(KeyEvent e) {
@@ -117,44 +113,40 @@ public class Starter
                 // get the coordinattes when mouse clicked
                 event_x = e.getX();
                 event_y = e.getY();
-                if (mouse_state.equals("add")) {
+                // prompt user for station name
+                text_label = JOptionPane.showInputDialog(null, "please gimme a label for this station");
 
-
-                    // prompt user for station name
-                    text_label = JOptionPane.showInputDialog(null, "please gimme a label for this station");
-
-                    // initialize label and circle representing station
-                    TextComponent tC = new TextComponent(event_x, event_y - 5, text_label);
-                    EllipseComponent eC = new EllipseComponent(event_x, event_y, 20, 20, current_color);
-                    if(autoconnect){
-                        if (!connecting) {
-                            System.out.println("created anchor pt");
-                            station_x = event_x;
-                            station_y = event_y;
-                            connecting = true;
-                        } else {
-                            System.out.println("created line");
-                            LineComponent connector = new LineComponent(station_x + 10, station_y + 10,
-                                    event_x + 10, event_y + 10, current_color);
-                            f.add(connector);
-                            f.setVisible(true);
-                            station_x = event_x;
-                            station_y = event_y;
-                        }
+                // initialize label and circle representing station - offsets are to make the center of the stations
+                // appear right on the cursor
+                TextComponent tC = new TextComponent(event_x - 20, event_y - 60, text_label);
+                EllipseComponent eC = new EllipseComponent(event_x - 20, event_y - 55, 20, 20, current_color);
+                if(autoconnect){
+                    if (!connecting) {
+                        System.out.println("created anchor pt");
+                        station_x = event_x;
+                        station_y = event_y;
+                        connecting = true;
+                    } else {
+                        System.out.println("created line");
+                        LineComponent connector = new LineComponent(station_x - 10, station_y - 45,
+                                event_x - 10, event_y - 45, current_color);
+                        f.add(connector);
+                        f.setVisible(true);
+                        station_x = event_x;
+                        station_y = event_y;
                     }
-                    // add ellipse to array of stations
-                    station_array.add(eC);
-
-                    // add elements to frame
-                    f.add(eC);
-                    f.setVisible(true);
-                    f.add(tC);
-                    f.setVisible(true);
-
-                    
                 }
-            }
+                // add ellipse to array of stations
+                station_array.add(eC);
 
+                // add elements to frame
+                f.add(eC);
+                f.setVisible(true);
+                f.add(tC);
+                f.setVisible(true);
+
+            }
+            // useless implements
             public void mouseReleased(MouseEvent e) { }
             public void mouseEntered(MouseEvent e) { }
             public void mouseExited(MouseEvent e) { }
@@ -163,7 +155,7 @@ public class Starter
 
         f.addKeyListener(new myKeyListener());//add keylistener to frame
         f.addMouseListener(new MickeyMouse()); // add mouselistner to frame
-        f.setVisible(true);
+        f.setVisible(true); // adds the event handlers to jframe
 
 
 
